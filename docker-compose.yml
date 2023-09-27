@@ -19,11 +19,14 @@ services:
             - php
             - mysqldb
     php:
-        image: nanoninja/php-fpm:${PHP_VERSION}
+        # image: nanoninja/php-fpm:${PHP_VERSION}
+        build: ./Docker/
         restart: always
         volumes:
             - "./Docker/etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
             - "./src:/var/www/html"
+        ports:
+            - "5173:5173"
     composer:
         image: "composer"
         volumes:

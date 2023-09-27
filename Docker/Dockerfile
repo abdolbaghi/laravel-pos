@@ -1,7 +1,17 @@
+FROM node:latest AS node
 FROM php:8.1-fpm
 
-LABEL maintainer="Vincent Letourneau <vincent@nanoninja.com>"
-
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+# RUN cat /etc/apt/sources.list
+RUN apt-get update -y \
+	&& apt-get install -y wget \
+	&& wget -O netselect.deb http://http.us.debian.org/debian/pool/main/n/netselect/netselect_0.3.ds1-28+b1_`dpkg --print-architecture`.deb \
+	&& dpkg -i netselect.deb \
+	&& rm netselect.deb \
+	&& sed -r -i -e "s#http://(archive|security)\.ubuntu\.com/ubuntu/?#$(netselect -v -s1 -t20 `wget -q -O- http://mirrors.ubuntu.com/IR.txt | grep -P -B8 "statusUP|statusSIX" | grep -o -P "http://[^\"]*"`|grep -P -o 'http://.+$')#g" /etc/apt/sources.list.d/debian.sources
+# RUN sed -i -e 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//mirror:\/\/mirrors\.ubuntu.com\/IR\.txt/' /etc/apt/sources.list
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
     g++ \
