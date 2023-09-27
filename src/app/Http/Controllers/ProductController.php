@@ -47,7 +47,7 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        $image_path = '';
+        $image_path = $request->input('image');
 
         if ($request->hasFile('image')) {
             $image_path = $request->file('image')->store('products', 'public');
@@ -106,6 +106,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->quantity = $request->quantity;
         $product->status = $request->status;
+        $product->image = $request->image;
 
         if ($request->hasFile('image')) {
             // Delete old image

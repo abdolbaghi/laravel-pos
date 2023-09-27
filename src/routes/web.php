@@ -14,7 +14,9 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+    \UniSharp\LaravelFilemanager\Lfm::routes();
+});
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
